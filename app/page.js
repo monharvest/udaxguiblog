@@ -210,7 +210,7 @@ const mongolianCategories = {
 };
 
 const WORKER_URL = "https://udaxgui-worker.monharvest.workers.dev";
-const ADMIN_SECRET_KEY = "YOUR_SECRET_PASSWORD";
+const ADMIN_SECRET_KEY = "789Hosanna7-";
 
 // --- Page Components ---
 
