@@ -312,25 +312,25 @@ const PostDetailPage = ({ post, onBack }) => {
     };
 
     return (
-        <main className="container mx-auto px-6 py-12">
-            <button onClick={onBack} className="flex items-center text-gray-600 hover:text-gray-900 font-semibold mb-8">
+        <main className="container mx-auto px-0 sm:px-4 md:px-6 py-8 md:py-12">
+            <button onClick={onBack} className="flex items-center text-gray-600 hover:text-gray-900 font-semibold mb-6 md:mb-8 px-4 sm:px-0">
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" clipRule="evenodd" /></svg>
                 Нийтлэл рүү буцах
             </button>
-            <div className="bg-white rounded-xl shadow-lg p-8 md:p-12 max-w-6xl mx-auto">
+            <div className="bg-white rounded-none sm:rounded-xl shadow-lg p-4 sm:p-6 md:p-8 lg:p-12 w-full max-w-none md:max-w-4xl mx-auto">
                 <span className={`text-sm font-semibold ${getCategoryStyles(post.category).color} ${getCategoryStyles(post.category).bgColor} py-1 px-3 rounded-full`}>{post.category}</span>
-                <h1 className="mt-4 text-4xl lg:text-5xl font-bold text-gray-900 leading-tight">{post.title}</h1>
-                <div className="mt-6"><p className="text-sm text-gray-500">{new Date(post.createdAt).toLocaleDateString('mn-MN')}</p></div>
-                <img className="w-full h-auto object-cover rounded-lg mt-8" src={post.imageUrl} alt="Нийтлэлийн зураг" />
+                <h1 className="mt-4 text-xl sm:text-2xl md:text-4xl lg:text-5xl font-bold text-gray-900 leading-tight">{post.title}</h1>
+                <div className="mt-4 md:mt-6"><p className="text-sm text-gray-500">{new Date(post.createdAt).toLocaleDateString('mn-MN')}</p></div>
+                <img className="w-full h-auto object-cover rounded-none sm:rounded-lg mt-6 md:mt-8" src={post.imageUrl} alt="Нийтлэлийн зураг" />
                 
                 <article 
-                    className="prose lg:prose-xl mt-8 max-w-none text-gray-700 space-y-4"
+                    className="prose prose-sm sm:prose md:prose-lg lg:prose-xl mt-6 md:mt-8 max-w-none text-gray-700 space-y-4"
                     dangerouslySetInnerHTML={{ __html: htmlContent }}
                 />
 
                 {post.pdfUrl && (
-                    <div className="mt-8 text-center">
-                        <button onClick={handleReadBookClick} className="bg-blue-600 text-white font-bold py-3 px-6 rounded-lg hover:bg-blue-700 transition-colors text-lg">
+                    <div className="mt-6 md:mt-8 text-center">
+                        <button onClick={handleReadBookClick} className="bg-blue-600 text-white font-bold py-2 px-4 sm:py-3 sm:px-6 rounded-lg hover:bg-blue-700 transition-colors text-base sm:text-lg">
                             Ном унших
                         </button>
                     </div>
@@ -463,7 +463,7 @@ const AddPostPage = ({ onAddPost }) => {
         setIsSubmitting(false);
     };
     return (
-        <main className="container mx-auto px-6 py-12"><div className="bg-white rounded-xl shadow-lg p-8 md:p-12 max-w-2xl mx-auto"><h1 className="text-4xl font-bold text-gray-900 mb-8 text-center">Шинэ нийтлэл нэмэх</h1><PostForm onSubmit={handleAdd} isSubmitting={isSubmitting} buttonText="Нийтлэл нэмэх" /></div></main>
+        <main className="container mx-auto px-0 sm:px-3 md:px-6 py-12"><div className="bg-white rounded-none sm:rounded-xl shadow-lg p-4 md:p-8 lg:p-12 w-full max-w-none md:max-w-2xl mx-auto"><h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-8 text-center">Шинэ нийтлэл нэмэх</h1><PostForm onSubmit={handleAdd} isSubmitting={isSubmitting} buttonText="Нийтлэл нэмэх" /></div></main>
     );
 };
 
@@ -475,7 +475,7 @@ const EditPostPage = ({ postToEdit, onUpdatePost }) => {
         setIsSubmitting(false);
     };
     return (
-        <main className="container mx-auto px-6 py-12"><div className="bg-white rounded-xl shadow-lg p-8 md:p-12 max-w-2xl mx-auto"><h1 className="text-4xl font-bold text-gray-900 mb-8 text-center">Нийтлэл засах</h1><PostForm initialPost={postToEdit} onSubmit={handleUpdate} isSubmitting={isSubmitting} buttonText="Шинэчлэх" /></div></main>
+        <main className="container mx-auto px-0 sm:px-3 md:px-6 py-12"><div className="bg-white rounded-none sm:rounded-xl shadow-lg p-4 md:p-8 lg:p-12 w-full max-w-none md:max-w-2xl mx-auto"><h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-8 text-center">Нийтлэл засах</h1><PostForm initialPost={postToEdit} onSubmit={handleUpdate} isSubmitting={isSubmitting} buttonText="Шинэчлэх" /></div></main>
     );
 };
 
@@ -492,9 +492,9 @@ const ManagePostsPage = ({ posts, onEdit, onDelete, onFeature }) => {
     };
     
     return (
-        <main className="container mx-auto px-6 py-12">
-            <div className="bg-white rounded-xl shadow-lg p-8 md:p-12 max-w-4xl mx-auto">
-                <h1 className="text-4xl font-bold text-gray-900 mb-8">Нийтлэл удирдах</h1>
+        <main className="container mx-auto px-0 sm:px-3 md:px-6 py-12">
+            <div className="bg-white rounded-none sm:rounded-xl shadow-lg p-4 md:p-8 lg:p-12 w-full max-w-none md:max-w-4xl mx-auto">
+                <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-8">Нийтлэл удирдах</h1>
                 <ul className="space-y-4">
                     {posts.map(post => (
                         <li key={post.id} className="flex justify-between items-center p-4 border rounded-lg">
