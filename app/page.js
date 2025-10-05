@@ -2,11 +2,6 @@
 
 import { useState, useEffect } from 'react';
 import { marked } from 'marked';
-import { notFound } from 'next/navigation';
-import { generateSlug } from './utils/slug';
-
-const WORKER_URL = "https://udaxgui-worker.monharvest.workers.dev";
-const ADMIN_SECRET_KEY = "789Hosanna7-";
 
 // --- SVG Icon Components ---
 const SearchIcon = () => (
@@ -124,13 +119,9 @@ const FeaturedPost = ({ post, onPostSelect }) => {
 
     const categoryStyles = getCategoryStyles(post.category);
 
-    const handleClick = () => {
-        window.location.href = `/posts/${generateSlug(post.title)}`;
-    };
-
     return (
         <section className="mb-16">
-            <button onClick={handleClick} className="w-full text-left">
+            <button onClick={() => onPostSelect(post)} className="w-full text-left">
                 <div className="bg-white rounded-xl shadow-lg overflow-hidden lg:grid lg:grid-cols-2 lg:gap-4 items-center transition-transform duration-300 hover:shadow-2xl">
                     <div className="relative h-64 lg:h-full">
                         <img className="w-full h-full object-cover" src={post.imageUrl} alt={post.title} />
@@ -159,12 +150,8 @@ const BlogCard = ({ post, onPostSelect }) => {
     const categoryStyles = getCategoryStyles(post.category);
     const truncatedExcerpt = post.excerpt.split(' ').slice(0, 20).join(' ') + (post.excerpt.split(' ').length > 20 ? '...' : '');
 
-    const handleClick = () => {
-        window.location.href = `/posts/${generateSlug(post.title)}`;
-    };
-
     return (
-        <button onClick={handleClick} className="text-left w-full">
+        <button onClick={() => onPostSelect(post)} className="text-left w-full">
             <article className="bg-white rounded-xl shadow-lg overflow-hidden transition-transform duration-300 hover:-translate-y-1 hover:shadow-2xl h-full">
                 <img className="w-full h-48 object-cover" src={post.imageUrl} alt="Нийтлэлийн зураг" />
                 <div className="p-6">
@@ -221,6 +208,9 @@ const mongolianCategories = {
     eternalWord: { name: "Мөнх үгийн ойлголт", color: "text-blue-600", bgColor: "bg-blue-100" },
     hell: { name: "Тамын тухай", color: "text-orange-600", bgColor: "bg-orange-100" },
 };
+
+const WORKER_URL = "https://udaxgui-worker.monharvest.workers.dev";
+const ADMIN_SECRET_KEY = "789Hosanna7-";
 
 // --- Page Components ---
 
@@ -516,14 +506,7 @@ export default function App() {
             setIsLoading(true);
             const response = await fetch(`${WORKER_URL}/api/posts`);
             const data = await response.json();
-            if (data.success) {
-                // Generate slugs for posts that don't have them
-                const postsWithSlugs = data.posts.map(post => ({
-                    ...post,
-                    slug: post.slug || generateSlug(post.title)
-                }));
-                setPosts(postsWithSlugs);
-            }
+            if (data.success) setPosts(data.posts);
         } catch (error) { console.error("Failed to fetch posts:", error); } 
         finally { setIsLoading(false); }
     };
@@ -650,21 +633,29 @@ export default function App() {
 
     const renderPage = () => {
         if (isLoading) return <div className="flex justify-center items-center h-screen"><p>Уншиж байна...</p></div>;
-        if (activePage === 'home') return <HomePage onPostSelect={handlePostSelect} posts={posts} />;
-        if (activePage === 'blog') return <BlogPage onPostSelect={handlePostSelect} posts={filteredPosts} selectedCategory={selectedCategory} onCategorySelect={handleCategorySelect} showFilters={showBlogFilters} />;
-        if (activePage === 'post-detail') return <PostDetailPage post={selectedPost} onBack={() => setActivePage('blog')} />;
-        if (activePage === 'admin') return <AdminLoginPage onLogin={handleLogin} />;
-        if (activePage === 'add-post') return <AddPostPage onAddPost={handleAddPost} />;
-        if (activePage === 'edit-post') return <EditPostPage postToEdit={postToEdit} onUpdatePost={handleUpdatePost} />;
-        if (activePage === 'manage-posts') return <ManagePostsPage posts={posts} onEdit={handleEdit} onDelete={handleDelete} onFeature={handleFeature} />;
-        return null;
+        if (selectedPost) return <PostDetailPage post={selectedPost} onBack={() => handleNavigate('home')} />;
+        
+        if (isAdmin) {
+             switch (activePage) {
+                case 'add-post': return <AddPostPage onAddPost={handleAddPost} />;
+                case 'edit-post': return <EditPostPage postToEdit={postToEdit} onUpdatePost={handleUpdatePost} />;
+                case 'manage-posts': return <ManagePostsPage posts={posts} onEdit={handleEdit} onDelete={handleDelete} onFeature={handleFeature} />;
+            }
+        }
+        
+        switch (activePage) {
+            case 'blog': return <BlogPage posts={filteredPosts} onPostSelect={handlePostSelect} selectedCategory={selectedCategory} onCategorySelect={handleCategorySelect} showFilters={showBlogFilters} />;
+            case 'admin': return <AdminLoginPage onLogin={handleLogin} />;
+            case 'home': default: return <HomePage posts={posts} onPostSelect={handlePostSelect} />;
+        }
     };
 
     return (
-        <div className="min-h-screen flex flex-col">
-            {activePage !== 'admin' && <Header onNavigate={handleNavigate} onSearch={handleSearch} searchQuery={searchQuery} onCategoryNav={handleCategoryNav} isAdmin={isAdmin} onLogout={handleLogout} />}
-            <div className="flex-grow">{renderPage()}</div>
-            {activePage !== 'admin' && <Footer onNavigate={handleNavigate} onCategoryNav={handleCategoryNav} />}
+        <div className="bg-slate-50 text-gray-800 font-sans">
+            <Header onNavigate={handleNavigate} onSearch={handleSearch} searchQuery={searchQuery} onCategoryNav={handleCategoryNav} isAdmin={isAdmin} onLogout={handleLogout} />
+            {renderPage()}
+            <Footer onNavigate={handleNavigate} onCategoryNav={handleCategoryNav} />
         </div>
     );
 }
+
