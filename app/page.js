@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { marked } from 'marked';
+import { generateSlug, generateUniqueSlug } from './utils/slug.js';
 
 // --- SVG Icon Components ---
 const SearchIcon = () => (
@@ -564,10 +565,16 @@ export default function App() {
     
     const handleAddPost = async (newPost) => {
         try {
+            // Generate slug from title
+            const existingSlugs = posts.map(post => post.slug).filter(Boolean);
+            const slug = generateUniqueSlug(newPost.title, existingSlugs);
+
+            const postWithSlug = { ...newPost, slug };
+
             const response = await fetch(`${WORKER_URL}/api/posts`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json', 'x-admin-secret': ADMIN_SECRET_KEY, },
-                body: JSON.stringify(newPost),
+                body: JSON.stringify(postWithSlug),
             });
             const data = await response.json();
             if (data.success) {
@@ -584,10 +591,24 @@ export default function App() {
     
     const handleUpdatePost = async (updatedPost) => {
         try {
+            // Regenerate slug if title changed
+            const existingPost = posts.find(p => p.id === updatedPost.id);
+            let slug = updatedPost.slug || existingPost?.slug;
+
+            if (!slug || existingPost?.title !== updatedPost.title) {
+                const existingSlugs = posts
+                    .filter(p => p.id !== updatedPost.id)
+                    .map(p => p.slug)
+                    .filter(Boolean);
+                slug = generateUniqueSlug(updatedPost.title, existingSlugs);
+            }
+
+            const postWithSlug = { ...updatedPost, slug };
+
             const response = await fetch(`${WORKER_URL}/api/posts/${updatedPost.id}`, {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json', 'x-admin-secret': ADMIN_SECRET_KEY, },
-                body: JSON.stringify(updatedPost),
+                body: JSON.stringify(postWithSlug),
             });
             const data = await response.json();
             if (data.success) {
