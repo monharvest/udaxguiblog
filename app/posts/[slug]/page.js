@@ -6,11 +6,11 @@ const WORKER_URL = "https://udaxgui-worker.monharvest.workers.dev";
 
 // Better slug function that handles Mongolian characters
 const createSlug = (title) => {
-    return title
-        .toLowerCase()
-        .replace(/\s+/g, '-') // Replace spaces with hyphens
-        .replace(/[^\u0400-\u04FF\w-]/g, '') // Keep Cyrillic, Latin, numbers, and hyphens
-        .trim();
+  return title
+    .toLowerCase()
+    .replace(/\s+/g, '-') // Replace spaces with hyphens
+    .replace(/[^\p{L}\p{N}-]/gu, '') // Keep all Unicode letters, numbers, and hyphens
+    .trim();
 };
 
 // SearchIcon component for header
