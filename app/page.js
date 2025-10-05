@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { marked } from 'marked';
 import { notFound } from 'next/navigation';
+import { generateSlug } from './utils/slug';
 
 const WORKER_URL = "https://udaxgui-worker.monharvest.workers.dev";
 const ADMIN_SECRET_KEY = "789Hosanna7-";
@@ -108,15 +109,6 @@ const Header = ({ onNavigate, onSearch, searchQuery, onCategoryNav, isAdmin, onL
     );
 };
 
-// Helper function to create slug from title - UPDATED to handle Mongolian
-const createSlug = (title) => {
-    return title
-        .toLowerCase()
-        .replace(/\s+/g, '-') // Replace spaces with hyphens
-        .replace(/[^\u0400-\u04FF\w-]/g, '') // Keep Cyrillic, Latin, numbers, and hyphens
-        .trim();
-};
-
 // --- Featured Post Component ---
 const FeaturedPost = ({ post, onPostSelect }) => {
     if (!post) {
@@ -133,8 +125,7 @@ const FeaturedPost = ({ post, onPostSelect }) => {
     const categoryStyles = getCategoryStyles(post.category);
 
     const handleClick = () => {
-        const slug = createSlug(post.title);
-        window.location.href = `/posts/${slug}-${post.id}`;
+        window.location.href = `/posts/${generateSlug(post.title)}`;
     };
 
     return (
@@ -169,8 +160,7 @@ const BlogCard = ({ post, onPostSelect }) => {
     const truncatedExcerpt = post.excerpt.split(' ').slice(0, 20).join(' ') + (post.excerpt.split(' ').length > 20 ? '...' : '');
 
     const handleClick = () => {
-        const slug = createSlug(post.title);
-        window.location.href = `/posts/${slug}-${post.id}`;
+        window.location.href = `/posts/${generateSlug(post.title)}`;
     };
 
     return (
@@ -526,7 +516,14 @@ export default function App() {
             setIsLoading(true);
             const response = await fetch(`${WORKER_URL}/api/posts`);
             const data = await response.json();
-            if (data.success) setPosts(data.posts);
+            if (data.success) {
+                // Generate slugs for posts that don't have them
+                const postsWithSlugs = data.posts.map(post => ({
+                    ...post,
+                    slug: post.slug || generateSlug(post.title)
+                }));
+                setPosts(postsWithSlugs);
+            }
         } catch (error) { console.error("Failed to fetch posts:", error); } 
         finally { setIsLoading(false); }
     };
